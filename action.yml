@@ -1,0 +1,33 @@
+# action.yml
+name: 'Manage Repo'
+description: 'Manage repository with upstream repo'
+inputs:
+  src_repo:
+    description: Non-github repo to pull
+    required: true
+  src_branch:
+    description: Branch name of source repo to pull
+    required: false
+    default: 'master'
+  dest_branch:
+    description: Branch name of destination repo to sync
+    required: false
+    default: 'master'
+  github_token:
+    description: github token
+    required: true
+  workflow_branch:
+    description: Branch name of workflow rebase to master after syncing
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  env:
+    GITHUB_TOKEN: ${{ inputs.github_token }}
+  args:
+    - ${{ inputs.src_repo }}
+    - ${{ inputs.src_branch }}
+    - ${{ inputs.dest_branch }}
+    - ${{ inputs.workflow_branch }}
+branding:
+  icon: 'git-merge'
+  color: '#0082FC'
