@@ -13,6 +13,10 @@ inputs:
     description: Branch name of destination repo to sync
     required: false
     default: 'master'
+  for_upstream_branch:
+    description: Name of for-upstream branch
+    required: false
+    default: 'none'
   github_token:
     description: github token
     required: true
@@ -23,6 +27,7 @@ runs:
   image: 'Dockerfile'
   env:
     GITHUB_TOKEN: ${{ inputs.github_token }}
+    FOR_UPSTREAM_BRANCH: ${{ inputs.for_upstream_branch }}
   args:
     - ${{ inputs.src_repo }}
     - ${{ inputs.src_branch }}
