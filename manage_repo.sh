@@ -29,6 +29,7 @@ git remote add upstream "$SRC_REPO"
 git fetch upstream
 git remote -v
 git push origin "refs/remotes/upstream/$SRC_BRANCH:refs/heads/$DEST_BRANCH" -f
+git push origin "refs/tags/*" -f
 git remote rm upstream
 git remote -v
 echo "<< Sync done"
