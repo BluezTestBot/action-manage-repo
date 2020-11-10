@@ -23,7 +23,13 @@ echo "BASEDIR=$BASEDIR"
 git config user.name "$GITHUB_ACTOR"
 git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-echo ">> Update remote repo"
+echo ">> Set local master branch"
+git checkout -b master origin/master
+
+echo ">> Set current branch to workflow"
+git checkout workflow
+
+echo ">> Add upstream repo"
 git remote set-url origin "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
 git remote add upstream "$SRC_REPO"
 git fetch upstream
@@ -35,48 +41,32 @@ origin_master_sha=$(git show-ref -s origin/master)
 echo "upstream/master: $upstream_master_sha"
 echo "origin/master: $origin_master_sha"
 
-#if [ "$upstream_master_sha" = "$origin_master_sha" ]; then
-#  echo ">> There is no new change in upstream repo. Complete sync and exit"
-#  exit 0
-#fi
+echo ">> Sync the repo upstream/for-upstream -> origin/for-upstream"
+git push origin "refs/remotes/upstream/for-upstream:refs/heads/for-upstream" -f
 
-#echo ">> There is a change in upstream repo. Start to sync the repo"
+echo ">> Sync the repo upstream/master -> origin/master"
+git push origin "refs/remotes/upstream/master:refs/heads/master" -f
 
-#git push origin "refs/remotes/upstream/for-upstream:refs/heads/for-upstream" -f
-#git push origin "refs/remotes/upstream/master:refs/heads/master" -f
+echo ">> Sync tags"
+git push origin "refs/tags/*" -f
 
-echo ">> Merge for-upstream branch"
-git checkout -b for-upstream origin/for-upstream
-git merge upstream/for-upstream
-git push --force origin for-upstream
+echo ">> Update origin"
+git fetch origin
 
-echo ">> Merge master branch"
-git checkout -b master origin/master
-#git branch -c master old-master
-#git branch -M workflow old-workflow
-git merge upstream/master
-git push --force origin master
+echo ">> Set new workflow branch from origin/master"
+git checkout -b new_workflow origin/master
 
-git remote rm upstream
-git remote -v
-echo ">> Sync done"
+echo ">> Commit lists from master to workflow"
+git rev-list --reverse master..workflow
 
-echo ">> Rebase workflow branch to master"
-#echo ">> commit lists old-master..old-workflow"
-#git rev-list --reverse old-master..old-workflow
+echo ">> cherry-pick commits to new_workflow branch"
+git rev-list --reverse master..workflow | while read rev
+do
+  git cherry-pick $rev || break
+done
 
-#git checkout -b master
-#git checkout -b workflow
-
-#echo ">> cherry-pick commits to workflow branch"
-#git rev-list --reverse old-master..old-workflow | while read rev
-#do
-#  git cherry-pick $rev || break
-#done
-
-git checkout workflow
-git rebase master
-git push --force origin workflow
+echo ">> Sync new_workflow -> origin/workflow"
+git push origin "new_workflow:workflow" -f
 
 echo ">> Rebase workflow done"
 
