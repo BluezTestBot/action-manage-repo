@@ -35,12 +35,12 @@ origin_master_sha=$(git show-ref -s origin/master)
 echo "upstream/master: $upstream_master_sha"
 echo "origin/master: $origin_master_sha"
 
-if [ "$upstream_master_sha" = "$origin_master_sha" ]; then
-  echo ">> There is no new change in upstream repo. Complete sync and exit"
-  exit 0
-fi
+#if [ "$upstream_master_sha" = "$origin_master_sha" ]; then
+#  echo ">> There is no new change in upstream repo. Complete sync and exit"
+#  exit 0
+#fi
 
-echo ">> There is a change in upstream repo. Start to sync the repo"
+#echo ">> There is a change in upstream repo. Start to sync the repo"
 
 #git push origin "refs/remotes/upstream/for-upstream:refs/heads/for-upstream" -f
 #git push origin "refs/remotes/upstream/master:refs/heads/master" -f
@@ -52,8 +52,8 @@ git push --force origin for-upstream
 
 echo ">> Merge master branch"
 git checkout -b master origin/master
-git branch -c master old-master
-git branch -M workflow old-workflow
+#git branch -c master old-master
+#git branch -M workflow old-workflow
 git merge upstream/master
 git push --force origin master
 
@@ -62,18 +62,20 @@ git remote -v
 echo ">> Sync done"
 
 echo ">> Rebase workflow branch to master"
-echo ">> commit lists old-master..old-workflow"
-git rev-list --reverse old-master..old-workflow
+#echo ">> commit lists old-master..old-workflow"
+#git rev-list --reverse old-master..old-workflow
 
-git checkout -b master
-git checkout -b workflow
+#git checkout -b master
+#git checkout -b workflow
 
-echo ">> cherry-pick commits to workflow branch"
-git rev-list --reverse old-master..old-workflow | while read rev
-do
-  git cherry-pick $rev || break
-done
+#echo ">> cherry-pick commits to workflow branch"
+#git rev-list --reverse old-master..old-workflow | while read rev
+#do
+#  git cherry-pick $rev || break
+#done
 
+git checkout workflow
+git rebase master
 git push --force origin workflow
 
 echo ">> Rebase workflow done"
