@@ -20,8 +20,10 @@ echo "WORKFLOW_BRANCH=$WORKFLOW_BRANCH"
 echo "GITHUB_ACTOR=$GITHUB_ACTOR"
 echo "BASEDIR=$BASEDIR"
 
-git config user.name "$GITHUB_ACTOR"
-git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+git config --global --add safe.directory $BASEDIR
+
+git config --global user.name "$GITHUB_ACTOR"
+git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
 echo ">> Sync repo with upstream repo"
 git remote set-url origin "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
