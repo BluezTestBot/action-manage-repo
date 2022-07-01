@@ -20,8 +20,13 @@ echo "WORKFLOW_BRANCH=$WORKFLOW_BRANCH"
 echo "GITHUB_ACTOR=$GITHUB_ACTOR"
 echo "BASEDIR=$BASEDIR"
 
-git config user.name "$GITHUB_ACTOR"
-git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+echo ">> Add $BASEDIR to git safe directory"
+git config --global --add safe.directory $BASEDIR
+
+echo ">> Update git username and email"
+git config --global user.name "$GITHUB_ACTOR"
+git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
 
 echo ">> Set local master branch"
 git checkout -b master origin/master
